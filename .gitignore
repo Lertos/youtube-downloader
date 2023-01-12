@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/out/artifacts/youtube_downloader_jar/run.bat
+/run.bat
+/out/artifacts/youtube_downloader_jar/run - Shortcut.lnk
+/out/artifacts/youtube_downloader_jar/youtube-downloader.jar
