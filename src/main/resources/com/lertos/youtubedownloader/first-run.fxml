@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.lertos.youtubedownloader.Controller"
-            prefHeight="400.0" prefWidth="600.0">
 
-</AnchorPane>
+<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lertos.youtubedownloader.Controller">
+   <children>
+      <Label alignment="CENTER" text="The &quot;run.bat&quot; file has now been created!" />
+      <Label alignment="CENTER" layoutX="30.0" layoutY="30.0" text="Close this and run &quot;run.bat&quot; file as an administrator to use this going forward." />
+      <Label alignment="CENTER" layoutX="30.0" layoutY="57.0" text="You can also right click the .bat file and create a shortcut." />
+      <Label alignment="CENTER" layoutX="46.0" layoutY="84.0" text="Then right click that shortcut, Properties, Advanced, and check &quot;Run as Administrator&quot;" />
+      <Label alignment="CENTER" layoutX="30.0" layoutY="111.0" text="Then you can simply double click the shortcut for further usage!" />
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
