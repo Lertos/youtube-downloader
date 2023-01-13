@@ -12,6 +12,7 @@ import java.io.*;
 
 public class Controller {
 
+    private SongList songList = new SongList();
     private final double labelSize = 25.0;
 
     @FXML
@@ -44,8 +45,11 @@ public class Controller {
         label.setMinHeight(labelSize);
         label.setPrefHeight(labelSize);
 
+        int index = songList.addSong(songName, URL);
+
         HBox hbox = new HBox(button, label);
         hbox.setSpacing(10);
+        hbox.setId(String.valueOf(index));
 
         vbSongList.getChildren().add(hbox);
     }
