@@ -100,6 +100,11 @@ public class Controller {
         }
     }
 
+    public void deleteAllSongs() {
+        songList.removeAllSongs();
+        vbSongList.getChildren().clear();
+    }
+
     //COMMAND TO USE (example): yt-dlp [URL] -P [PATH_TO_DOWNLOAD_TO] -f "ba"
     //URL Example: https://youtu.be/lbLug8M_5HQ
     private void downloadSong(Song song) {

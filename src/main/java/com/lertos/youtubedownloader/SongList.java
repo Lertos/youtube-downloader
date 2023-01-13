@@ -25,6 +25,10 @@ public class SongList {
         }
     }
 
+    public void removeAllSongs() {
+        songs.clear();
+    }
+
     public int addSong(String videoTitle, String URL) {
         Song song = new Song(currentIndex, videoTitle, URL);
         int index = currentIndex;
