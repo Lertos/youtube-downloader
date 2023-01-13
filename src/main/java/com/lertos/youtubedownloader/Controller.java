@@ -6,6 +6,7 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,9 @@ public class Controller {
 
     private SongList songList = new SongList();
     private final double labelSize = 25.0;
+    private double previousProgressCounter;
+    private double currentProgressCounter;
+    private double endProgressCounter;
 
     @FXML
     private TextField tfFolderPath;
@@ -24,7 +28,13 @@ public class Controller {
     private TextField tfNewURL;
 
     @FXML
+    private ProgressBar progressBar;
+
+    @FXML
     private VBox vbSongList;
+
+    @FXML
+    private HBox hbProgressBar;
 
 
     public void openFileChooser() {
@@ -56,6 +66,7 @@ public class Controller {
         addDeleteButtonEvent(hbox, button, index);
 
         vbSongList.getChildren().add(hbox);
+        tfNewURL.clear();
     }
 
     private void addDeleteButtonEvent(HBox hbox, Button button, int index) {
@@ -95,9 +106,39 @@ public class Controller {
     }
 
     public void downloadAllSongs() {
+        //Check if there are any songs
+        if (songList.getSongs().size() == 0) {
+            System.out.println("You must add songs before downloading them.");
+            return;
+        }
+
+        //Check if the download location is entered
+        if (tfFolderPath.getText().isEmpty()) {
+            System.out.println("You must specify a valid folder location for the downloads");
+            return;
+        }
+        //Check if the download location is an existing directory
+        File file = new File(tfFolderPath.getText());
+        if (!file.exists()) {
+            System.out.println("Check that the directory entered is valid/exists");
+            return;
+        }
+
+        //Change the progress bar values
+        previousProgressCounter = 0;
+        currentProgressCounter = 0;
+        endProgressCounter = songList.getSongs().size() * 100;
+
+        progressBar.setProgress(currentProgressCounter);
+
+        hbProgressBar.setVisible(true);
+
+        //Start downloading all the songs in the list
         for (Song song : songList.getSongs()) {
             downloadSong(song);
         }
+
+        //hbProgressBar.setVisible(false);
     }
 
     public void deleteAllSongs() {
@@ -115,6 +156,10 @@ public class Controller {
 
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
+            String progressPart;
+
+            int numOfSongs = songList.getSongs().size();
+            double progressToAdd;
 
             while (true) {
                 line = r.readLine();
@@ -122,13 +167,25 @@ public class Controller {
                     break;
                 else {
                     if (line.startsWith("[download]")) {
-                        System.out.println(line);
+                        progressPart = line.replace("[download]", "").replace(" ", "");
+
+                        if (progressPart.indexOf("%") == -1)
+                            continue;
+
+                        //Retrieving the % of progress to add this cycle
+                        progressPart = progressPart.substring(0, progressPart.indexOf("%"));
+
+                        try {
+                            progressToAdd = Double.parseDouble(progressPart);
+
+                            currentProgressCounter = (progressToAdd - previousProgressCounter) / (numOfSongs * 100);
+                            previousProgressCounter = currentProgressCounter;
+                            progressBar.setProgress(currentProgressCounter);
+                        } catch (Exception e) { }
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
 }
