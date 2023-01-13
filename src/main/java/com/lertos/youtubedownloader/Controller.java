@@ -68,11 +68,12 @@ public class Controller {
         });
     }
 
+    //--max-filesize = Do not download the song, just to get the title
+    //--print title = Gets the title of the video
     private String getSongName(String URL) {
+        String songName = "";
+
         try {
-            //--max-filesize = Do not download the song, just to get the title
-            //--print title = Gets the title of the video
-            //Example URL: https://youtu.be/lbLug8M_5HQ
             ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + URL + " -f \"ba\" --max-filesize 1k --print title");
             builder.redirectErrorStream(true);
             Process p = builder.start();
@@ -85,35 +86,40 @@ public class Controller {
                 if (line == null)
                     break;
                 if (!line.startsWith("ERROR"))
-                    return line;
+                    songName = line;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return songName;
+    }
+
+    public void downloadAllSongs() {
+        for (Song song : songList.getSongs()) {
+            downloadSong(song);
+        }
     }
 
     //COMMAND TO USE (example): yt-dlp [URL] -P [PATH_TO_DOWNLOAD_TO] -f "ba"
-    public void downloadSongs() {
+    //URL Example: https://youtu.be/lbLug8M_5HQ
+    private void downloadSong(Song song) {
         try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp https://youtu.be/lbLug8M_5HQ -P \"C:\\Users\\Dylan\\Downloads\" -f \"ba\"");
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.getURL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
             builder.redirectErrorStream(true);
             Process p = builder.start();
+
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
+
             while (true) {
                 line = r.readLine();
                 if (line == null)
                     break;
                 else {
-                    if (line.startsWith("ERROR")) {
-                        System.out.println("y");
-                    }
-                    else {
-                        System.out.println("no");
+                    if (line.startsWith("[download]")) {
+                        System.out.println(line);
                     }
                 }
-                System.out.println(line);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -27,8 +27,6 @@ public class Main extends Application {
         this.stage = stage;
         this.controller = fxmlLoader.getController();
 
-        //controller.downloadSongs();
-
         stage.setTitle("YouTube Song Downloader");
         stage.setScene(scene);
         stage.show();

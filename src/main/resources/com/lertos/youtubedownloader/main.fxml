@@ -47,7 +47,7 @@
          <children>
             <HBox alignment="CENTER" prefWidth="200.0" spacing="20.0">
                <children>
-                  <Button mnemonicParsing="false" text="Download" />
+                  <Button mnemonicParsing="false" onAction="#downloadAllSongs" text="Download" />
                   <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Delete All" />
                </children>
                <VBox.margin>
