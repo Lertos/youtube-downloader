@@ -1,5 +1,8 @@
 package com.lertos.youtubedownloader;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -49,9 +52,20 @@ public class Controller {
 
         HBox hbox = new HBox(button, label);
         hbox.setSpacing(10);
-        hbox.setId(String.valueOf(index));
+
+        addDeleteButtonEvent(hbox, button, index);
 
         vbSongList.getChildren().add(hbox);
+    }
+
+    private void addDeleteButtonEvent(HBox hbox, Button button, int index) {
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                songList.removeSong(index);
+                vbSongList.getChildren().remove(hbox);
+            }
+        });
     }
 
     private String getSongName(String URL) {
