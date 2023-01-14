@@ -1,5 +1,6 @@
 package com.lertos.youtubedownloader;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -127,14 +128,14 @@ public class Controller {
         downloadedSongs = 0;
         totalSongsToDownload = songList.getSongs().size();
 
+        lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
+
         hbProgressBar.setVisible(true);
 
         //Start downloading all the songs in the list
         for (Song song : songList.getSongs()) {
             downloadSong(song);
         }
-
-        //hbProgressBar.setVisible(false);
     }
 
     public void deleteAllSongs() {
@@ -145,25 +146,24 @@ public class Controller {
     //COMMAND TO USE (example): yt-dlp [URL] -P [PATH_TO_DOWNLOAD_TO] -f "ba"
     //URL Example: https://youtu.be/lbLug8M_5HQ
     private void downloadSong(Song song) {
-        try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.getURL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.getURL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
+                    Process p = builder.start();
 
-            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-
-            while (true) {
-                line = r.readLine();
-                if (line == null)
-                    break;
+                    p.waitFor();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadedSongs++;
+                            lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
+                        }
+                    });
+                } catch (Exception e) { e.printStackTrace(); }
             }
-
-            //TODO: Use the platform run later thing or something
-
-            downloadedSongs++;
-            lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
-        } catch (IOException e) { e.printStackTrace(); }
+        };
+        new Thread(task).start();
     }
-
 }
