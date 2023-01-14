@@ -1,13 +1,9 @@
 package com.lertos.youtubedownloader;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,8 +13,7 @@ import java.io.*;
 
 public class Controller {
 
-    private SongList songList = new SongList();
-    private final double labelSize = 25.0;
+    private final SongList songList = new SongList();
     private int downloadedSongs;
     private int totalSongsToDownload;
 
@@ -55,6 +50,8 @@ public class Controller {
         Button button = new Button("\uD83D\uDDD1");
         Label label = new Label(songName);
 
+        double labelSize = 25.0;
+
         label.setMinHeight(labelSize);
         label.setPrefHeight(labelSize);
 
@@ -70,12 +67,9 @@ public class Controller {
     }
 
     private void addDeleteButtonEvent(HBox hbox, Button button, int index) {
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                songList.removeSong(index);
-                vbSongList.getChildren().remove(hbox);
-            }
+        button.setOnAction(event -> {
+            songList.removeSong(index);
+            vbSongList.getChildren().remove(hbox);
         });
     }
 
@@ -146,23 +140,17 @@ public class Controller {
     //COMMAND TO USE (example): yt-dlp [URL] -P [PATH_TO_DOWNLOAD_TO] -f "ba"
     //URL Example: https://youtu.be/lbLug8M_5HQ
     private void downloadSong(Song song) {
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.getURL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
-                    Process p = builder.start();
+        Runnable task = () -> {
+            try {
+                ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.URL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
+                Process p = builder.start();
 
-                    p.waitFor();
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadedSongs++;
-                            lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
-                        }
-                    });
-                } catch (Exception e) { e.printStackTrace(); }
-            }
+                p.waitFor();
+                Platform.runLater(() -> {
+                    downloadedSongs++;
+                    lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
+                });
+            } catch (Exception e) { e.printStackTrace(); }
         };
         new Thread(task).start();
     }

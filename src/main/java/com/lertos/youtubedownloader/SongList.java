@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SongList {
 
-    private List<Song> songs;
+    private final List<Song> songs;
     private int currentIndex;
 
     public SongList() {
@@ -20,7 +20,7 @@ public class SongList {
 
     public void removeSong(int index) {
         for (Song song : songs) {
-            if (song.getIndex() == index)
+            if (song.index() == index)
                 songs.remove(index);
         }
     }

@@ -24,8 +24,8 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(xmlToLoad));
         Scene scene = new Scene(fxmlLoader.load());
 
-        this.stage = stage;
-        this.controller = fxmlLoader.getController();
+        Main.stage = stage;
+        Main.controller = fxmlLoader.getController();
 
         stage.setTitle("YouTube Song Downloader");
         stage.setScene(scene);

@@ -19,13 +19,13 @@
          <children>
             <HBox fx:id="hbFilePath" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TextField fx:id="tfFolderPath" promptText="Path of Downloaded Songs" text="C:\Users\Dylan\Downloads" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="tfFolderPath" promptText="Path of Downloaded Songs" text="" HBox.hgrow="ALWAYS" />
                   <Button fx:id="btnChangeFolder" mnemonicParsing="false" onAction="#openFileChooser" text="Change" />
                </children>
             </HBox>
             <HBox>
                <children>
-                  <TextField fx:id="tfNewURL" promptText="Paste URL Here" text="https://youtu.be/lbLug8M_5HQ" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="tfNewURL" promptText="Paste URL Here" text="" HBox.hgrow="ALWAYS" />
                   <Button fx:id="btnAddURL" minWidth="-Infinity" mnemonicParsing="false" onAction="#addSongToList" prefWidth="57.0" text="Add" />
                </children>
             </HBox>
