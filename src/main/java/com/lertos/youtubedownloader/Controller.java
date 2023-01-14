@@ -18,9 +18,8 @@ public class Controller {
 
     private SongList songList = new SongList();
     private final double labelSize = 25.0;
-    private double previousProgressCounter;
-    private double currentProgressCounter;
-    private double endProgressCounter;
+    private int downloadedSongs;
+    private int totalSongsToDownload;
 
     @FXML
     private TextField tfFolderPath;
@@ -28,7 +27,7 @@ public class Controller {
     private TextField tfNewURL;
 
     @FXML
-    private ProgressBar progressBar;
+    private Label lbProgress;
 
     @FXML
     private VBox vbSongList;
@@ -125,11 +124,8 @@ public class Controller {
         }
 
         //Change the progress bar values
-        previousProgressCounter = 0;
-        currentProgressCounter = 0;
-        endProgressCounter = songList.getSongs().size() * 100;
-
-        progressBar.setProgress(currentProgressCounter);
+        downloadedSongs = 0;
+        totalSongsToDownload = songList.getSongs().size();
 
         hbProgressBar.setVisible(true);
 
@@ -156,35 +152,17 @@ public class Controller {
 
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
-            String progressPart;
-
-            int numOfSongs = songList.getSongs().size();
-            double progressToAdd;
 
             while (true) {
                 line = r.readLine();
                 if (line == null)
                     break;
-                else {
-                    if (line.startsWith("[download]")) {
-                        progressPart = line.replace("[download]", "").replace(" ", "");
-
-                        if (progressPart.indexOf("%") == -1)
-                            continue;
-
-                        //Retrieving the % of progress to add this cycle
-                        progressPart = progressPart.substring(0, progressPart.indexOf("%"));
-
-                        try {
-                            progressToAdd = Double.parseDouble(progressPart);
-
-                            currentProgressCounter = (progressToAdd - previousProgressCounter) / (numOfSongs * 100);
-                            previousProgressCounter = currentProgressCounter;
-                            progressBar.setProgress(currentProgressCounter);
-                        } catch (Exception e) { }
-                    }
-                }
             }
+
+            //TODO: Use the platform run later thing or something
+
+            downloadedSongs++;
+            lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
         } catch (IOException e) { e.printStackTrace(); }
     }
 

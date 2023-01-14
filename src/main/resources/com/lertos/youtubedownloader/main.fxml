@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -57,7 +56,7 @@
             <HBox fx:id="hbProgressBar" alignment="CENTER" spacing="10.0" visible="false">
                <children>
                   <Label text="Progress" />
-                  <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" />
+                  <Label fx:id="lbProgress" layoutX="133.0" layoutY="10.0" />
                </children>
             </HBox>
          </children>
