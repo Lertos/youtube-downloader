@@ -20,8 +20,10 @@ public class SongList {
 
     public void removeSong(int index) {
         for (Song song : songs) {
-            if (song.index() == index)
-                songs.remove(index);
+            if (song.index() == index) {
+                songs.remove(song);
+                break;
+            }
         }
     }
 
