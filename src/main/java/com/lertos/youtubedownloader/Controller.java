@@ -31,6 +31,13 @@ public class Controller {
     @FXML
     private HBox hbProgressBar;
 
+    private void showDialog(String message) {
+        Dialog<String> dialog = new Dialog<>();
+        ButtonType buttonType = new ButtonType("Understood", ButtonBar.ButtonData.OK_DONE);
+        dialog.setContentText(message);
+        dialog.getDialogPane().getButtonTypes().add(buttonType);
+        dialog.showAndWait();
+    }
 
     public void openFileChooser() {
         final DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -44,7 +51,8 @@ public class Controller {
         String URL = tfNewURL.getText();
         String songName = getSongName(URL);
 
-        if (songName.isEmpty())
+        if (URL.isEmpty()) {
+            showDialog("You must enter a URL in the field beside 'Add'");
             return;
 
         Button button = new Button("\uD83D\uDDD1");
@@ -102,19 +110,19 @@ public class Controller {
     public void downloadAllSongs() {
         //Check if there are any songs
         if (songList.getSongs().size() == 0) {
-            System.out.println("You must add songs before downloading them.");
+            showDialog("You must add songs before downloading them");
             return;
         }
 
         //Check if the download location is entered
         if (tfFolderPath.getText().isEmpty()) {
-            System.out.println("You must specify a valid folder location for the downloads");
+            showDialog("You must specify a valid folder location for the downloads");
             return;
         }
         //Check if the download location is an existing directory
         File file = new File(tfFolderPath.getText());
         if (!file.exists()) {
-            System.out.println("Check that the directory entered is valid/exists");
+            showDialog("Check that the directory entered is valid/exists");
             return;
         }
 
@@ -149,6 +157,9 @@ public class Controller {
                 Platform.runLater(() -> {
                     downloadedSongs++;
                     lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
+
+                    if (downloadedSongs == totalSongsToDownload)
+                        showDialog("All songs successfully downloaded");
                 });
             } catch (Exception e) { e.printStackTrace(); }
         };
