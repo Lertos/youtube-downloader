@@ -1,13 +1,16 @@
 package com.lertos.youtubedownloader;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 import java.io.*;
+import java.net.URL;
 
 public class Controller {
 
@@ -15,6 +18,8 @@ public class Controller {
     private int downloadedSongs;
     private int totalSongsToDownload;
 
+    @FXML
+    private TextField tfFFMPEGPath;
     @FXML
     private TextField tfFolderPath;
     @FXML
@@ -28,6 +33,22 @@ public class Controller {
 
     @FXML
     private HBox hbProgressBar;
+    @FXML
+    private HBox hbFFMPEGChooser;
+    @FXML
+    private ToggleGroup tgFileFormat;
+
+
+    public void onFileFormatToggleChange() {
+        RadioButton selected = (RadioButton) tgFileFormat.getSelectedToggle();
+        String option = selected.getText();
+
+        if (option.equalsIgnoreCase("MP3")) {
+            hbFFMPEGChooser.setVisible(true);
+        } else {
+            hbFFMPEGChooser.setVisible(false);
+        }
+    }
 
     private void showDialog(String message) {
         Dialog<String> dialog = new Dialog<>();
@@ -35,6 +56,19 @@ public class Controller {
         dialog.setContentText(message);
         dialog.getDialogPane().getButtonTypes().add(buttonType);
         dialog.showAndWait();
+    }
+
+    public void openFFMPEGFileChooser() {
+        final FileChooser fileChooser = new FileChooser();
+        final File selectedFile = fileChooser.showOpenDialog(Main.stage);
+
+        if (selectedFile != null) {
+            if (!selectedFile.getName().equalsIgnoreCase("ffmpeg.exe")) {
+                showDialog("You must choose the 'ffmpeg.exe' file here");
+                return;
+            }
+            tfFFMPEGPath.setText(selectedFile.getAbsolutePath());
+        }
     }
 
     public void openFileChooser() {
@@ -75,6 +109,9 @@ public class Controller {
     private String getProperSongName(String songName) {
         songName = songName.replace("_", " ");
 
+        if (hbFFMPEGChooser.isVisible())
+            songName = songName.replace(".m4a", ".mp3");
+
         String[] arr = songName.split(" ");
         StringBuilder sb = new StringBuilder();
 
@@ -89,6 +126,11 @@ public class Controller {
     public void addSongToList() {
         String URL = tfNewURL.getText();
         String songName;
+
+        if (hbFFMPEGChooser.isVisible() && tfFFMPEGPath.getText().isEmpty()) {
+            showDialog("When using MP3 you must enter the URL to the ffmpeg.exe file");
+            return;
+        }
 
         if (URL.isEmpty()) {
             showDialog("You must enter a URL in the field beside 'Add'");
@@ -142,7 +184,18 @@ public class Controller {
         String songName = "";
 
         try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + URL + " -f m4a --max-filesize 1k --print filename -o \"%(title)s.%(ext)s\" --restrict-filenames");
+            StringBuilder sb = new StringBuilder("yt-dlp ");
+            sb.append(URL);
+            sb.append(" -f m4a ");
+
+            if (hbFFMPEGChooser.isVisible()) {
+                sb.append(" -x --audio-format mp3 --ffmpeg-location ");
+                sb.append(tfFFMPEGPath.getText());
+            }
+
+            sb.append(" --max-filesize 1k --print filename -o \"%(title)s.%(ext)s\" --restrict-filenames");
+
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", sb.toString());
             builder.redirectErrorStream(true);
             Process p = builder.start();
 
@@ -205,7 +258,22 @@ public class Controller {
     private void downloadSong(Song song) {
         Runnable task = () -> {
             try {
-                ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.URL() + " -P " + tfFolderPath.getText() + " -f m4a -o \"" + song.videoTitle() + ".%(ext)s\" --restrict-filenames");
+                StringBuilder sb = new StringBuilder("yt-dlp ");
+                sb.append(song.URL());
+                sb.append(" -P ");
+                sb.append(tfFolderPath.getText());
+                sb.append(" -f m4a ");
+
+                if (hbFFMPEGChooser.isVisible()) {
+                    sb.append(" -x --audio-format mp3 --ffmpeg-location ");
+                    sb.append(tfFFMPEGPath.getText());
+                }
+
+                sb.append(" -o \"");
+                sb.append(song.videoTitle());
+                sb.append(".%(ext)s\" --restrict-filenames");
+
+                ProcessBuilder builder = new ProcessBuilder("cmd", "/c", sb.toString());
                 Process p = builder.start();
 
                 p.waitFor();

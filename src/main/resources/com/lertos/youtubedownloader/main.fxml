@@ -3,9 +3,11 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -17,6 +19,25 @@
    <children>
       <VBox prefWidth="100.0" VBox.vgrow="NEVER">
          <children>
+            <HBox fx:id="hbFilePath1" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <RadioButton mnemonicParsing="false" onAction="#onFileFormatToggleChange" text="MP3">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="tgFileFormat" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onFileFormatToggleChange" selected="true" text="M4A" toggleGroup="$tgFileFormat" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="hbFFMPEGChooser" visible="false">
+               <children>
+                  <TextField fx:id="tfFFMPEGPath" promptText="Path of FFMPEG .EXE" text="" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnChangeFFMPEGPath" minWidth="-Infinity" mnemonicParsing="false" onAction="#openFFMPEGFileChooser" prefWidth="57.0" text="Change" />
+               </children>
+            </HBox>
             <HBox fx:id="hbFilePath" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <TextField fx:id="tfFolderPath" promptText="Path of Downloaded Songs" text="" HBox.hgrow="ALWAYS" />
