@@ -1,7 +1,6 @@
 package com.lertos.youtubedownloader;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -17,6 +16,11 @@ public class Controller {
     private final SongList songList = new SongList();
     private int downloadedSongs;
     private int totalSongsToDownload;
+    private final String settingsFileName = "settings.txt";
+    private final String settingsFormatAttribute = "format";
+    private final String settingsFFMPEGAttribute = "ffmpeg";
+    private final String settingsOutputPathAttribute = "outputPath";
+
 
     @FXML
     private TextField tfFFMPEGPath;
@@ -24,26 +28,99 @@ public class Controller {
     private TextField tfFolderPath;
     @FXML
     private TextField tfNewURL;
-
     @FXML
     private Label lbProgress;
-
     @FXML
     private VBox vbSongList;
-
     @FXML
     private HBox hbProgressBar;
     @FXML
     private HBox hbFFMPEGChooser;
     @FXML
     private ToggleGroup tgFileFormat;
+    @FXML
+    private RadioButton toggleMP3;
+    @FXML
+    private RadioButton toggleM4A;
 
+    public void saveSettings() {
+        try {
+            File file = new File(settingsFileName);
+            file.createNewFile();
+
+            FileWriter fw = new FileWriter(file);
+            fw.write("");
+
+            String format = getSelectedFormat();
+
+            fw.append(settingsFormatAttribute + "=" + format + "\n");
+
+            if (format.equalsIgnoreCase("MP3"))
+                fw.append(settingsFFMPEGAttribute + "=" + tfFFMPEGPath.getText() + "\n");
+
+            fw.append(settingsOutputPathAttribute + "=" + tfFolderPath.getText() + "\n");
+
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadSettings() {
+        try {
+            File file = new File(settingsFileName);
+            Reader reader = new BufferedReader(new FileReader(file));
+
+            StringBuilder sb = new StringBuilder();
+            int nextChar = reader.read();
+
+            while(nextChar != -1) {
+                char curChar = (char) nextChar;
+
+                if (curChar == '\n') {
+                    loadSetting(sb.toString());
+                    sb = new StringBuilder();
+                } else
+                    sb.append(curChar);
+
+                nextChar = reader.read();
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadSetting(String settingLine) {
+        int equalsIndex = settingLine.indexOf("=");
+
+        String setting = settingLine.substring(0, equalsIndex);
+        String value = settingLine.substring(equalsIndex + 1);
+
+        switch (setting) {
+            case settingsFormatAttribute -> {
+                if (value.equalsIgnoreCase("MP3")) {
+                    toggleMP3.setSelected(true);
+                    hbFFMPEGChooser.setVisible(true);
+                }
+                else
+                    toggleM4A.setSelected(true);
+            }
+            case settingsFFMPEGAttribute -> tfFFMPEGPath.setText(value);
+            case settingsOutputPathAttribute -> tfFolderPath.setText(value);
+        }
+
+    }
+
+    private String getSelectedFormat() {
+        RadioButton selected = (RadioButton) tgFileFormat.getSelectedToggle();
+        return selected.getText();
+    }
 
     public void onFileFormatToggleChange() {
-        RadioButton selected = (RadioButton) tgFileFormat.getSelectedToggle();
-        String option = selected.getText();
+        String format = getSelectedFormat();
 
-        if (option.equalsIgnoreCase("MP3")) {
+        if (format.equalsIgnoreCase("MP3")) {
             hbFFMPEGChooser.setVisible(true);
         } else {
             hbFFMPEGChooser.setVisible(false);
@@ -281,8 +358,11 @@ public class Controller {
                     downloadedSongs++;
                     lbProgress.setText(downloadedSongs + " / " + totalSongsToDownload);
 
-                    if (downloadedSongs == totalSongsToDownload)
+                    if (downloadedSongs == totalSongsToDownload) {
                         showDialog("All songs successfully downloaded");
+                        //Save the current settings so next time user opens this it will be quicker
+                        saveSettings();
+                    }
                 });
             } catch (Exception e) { e.printStackTrace(); }
         };

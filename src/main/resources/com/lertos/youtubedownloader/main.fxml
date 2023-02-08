@@ -21,12 +21,12 @@
          <children>
             <HBox fx:id="hbFilePath1" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <RadioButton mnemonicParsing="false" onAction="#onFileFormatToggleChange" text="MP3">
+                  <RadioButton fx:id="toggleMP3" mnemonicParsing="false" onAction="#onFileFormatToggleChange" text="MP3">
                      <toggleGroup>
                         <ToggleGroup fx:id="tgFileFormat" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onFileFormatToggleChange" selected="true" text="M4A" toggleGroup="$tgFileFormat" />
+                  <RadioButton fx:id="toggleM4A" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onFileFormatToggleChange" selected="true" text="M4A" toggleGroup="$tgFileFormat" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
