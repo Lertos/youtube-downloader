@@ -142,7 +142,7 @@ public class Controller {
         String songName = "";
 
         try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + URL + " -f \"ba\" --max-filesize 1k --print title");
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + URL + " -f m4a --max-filesize 1k --print filename -o \"%(title)s.%(ext)s\" --restrict-filenames");
             builder.redirectErrorStream(true);
             Process p = builder.start();
 
@@ -205,7 +205,7 @@ public class Controller {
     private void downloadSong(Song song) {
         Runnable task = () -> {
             try {
-                ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.URL() + " -P " + tfFolderPath.getText() + " -f \"ba\"");
+                ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "yt-dlp " + song.URL() + " -P " + tfFolderPath.getText() + " -f m4a -o \"" + song.videoTitle() + ".%(ext)s\" --restrict-filenames");
                 Process p = builder.start();
 
                 p.waitFor();
