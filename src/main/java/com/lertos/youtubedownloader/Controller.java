@@ -2,9 +2,7 @@ package com.lertos.youtubedownloader;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -47,13 +45,70 @@ public class Controller {
             tfFolderPath.setText(selectedDirectory.getAbsolutePath());
     }
 
+    private boolean songExistsInFolder(String songName) {
+        File file = new File(tfFolderPath.getText());
+
+        for (String fileName : file.list()) {
+            if (fileName.contains(songName))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean songExistsInSongList(String songName) {
+        for (Song song : songList.getSongs()) {
+            if (song.videoTitle().equalsIgnoreCase(songName))
+                return true;
+        }
+        return false;
+    }
+
+    private String getTrimmedURL(String URL) {
+        int index = URL.indexOf("&");
+
+        if (index == -1)
+            return URL;
+
+        return URL.substring(0, index);
+    }
+
+    private String getProperSongName(String songName) {
+        songName = songName.replace("_", " ");
+
+        String[] arr = songName.split(" ");
+        StringBuilder sb = new StringBuilder();
+
+        for (String word : arr) {
+            sb.append(word.substring(0, 1).toUpperCase());
+            sb.append(word.substring(1));
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+
     public void addSongToList() {
         String URL = tfNewURL.getText();
-        String songName = getSongName(URL);
+        String songName;
 
         if (URL.isEmpty()) {
             showDialog("You must enter a URL in the field beside 'Add'");
             return;
+        }
+
+        URL = getTrimmedURL(URL);
+        songName = getProperSongName(getSongName(URL));
+
+        if (songExistsInFolder(songName)) {
+            showDialog("That song is already downloaded");
+            tfNewURL.setText("");
+            return;
+        }
+
+        if (songExistsInSongList(songName)) {
+            showDialog("That song already exists in the list");
+            tfNewURL.setText("");
+            return;
+        }
 
         Button button = new Button("\uD83D\uDDD1");
         Label label = new Label(songName);
