@@ -5,7 +5,8 @@ A simple GUI application that allows you to build up a list of songs, by providi
 ## Dependencies:
 
 1. Java SE 17 (JDK)
-2. (Windows) Install yt-dlp: winget install yt-dlp --accept-package-agreements (Wiki to Download here: https://github.com/yt-dlp/yt-dlp/wiki/Installation#third-party-package-managers)
+2. Install yt-dlp: winget install yt-dlp --accept-package-agreements (Windows download here: https://github.com/yt-dlp/yt-dlp/wiki/Installation#third-party-package-managers)
+3. FFMPEG - https://ffmpeg.org/download.html (ONLY IF YOU WANT MP3's AND NOT M4A OUTPUT FILES)
 
 ## Instructions for the first time you run this:
 
