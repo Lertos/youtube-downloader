@@ -9,7 +9,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.*;
-import java.net.URL;
 
 public class Controller {
 
@@ -20,6 +19,7 @@ public class Controller {
     private final String settingsFormatAttribute = "format";
     private final String settingsFFMPEGAttribute = "ffmpeg";
     private final String settingsOutputPathAttribute = "outputPath";
+    private int openSettingsFileAttempt = 0;
 
 
     @FXML
@@ -87,7 +87,12 @@ public class Controller {
             }
             reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            saveSettings();
+
+            if (openSettingsFileAttempt == 0) {
+                loadSettings();
+                openSettingsFileAttempt++;
+            }
         }
     }
 
@@ -287,9 +292,38 @@ public class Controller {
                     songName = line;
             }
         } catch (IOException e) {
+            System.out.println("=======================");
             e.printStackTrace();
         }
         return songName;
+    }
+
+    @FXML
+    private boolean updateYTDLP() {
+        try {
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", " yt-dlp -U");
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+
+            while (true) {
+                line = r.readLine();
+                if (line == null) {
+                    showDialog("YT-DLP has been updated");
+                    return true;
+                }
+                if (line.startsWith("yt-dlp is up to date")) {
+                    showDialog("YT-DLP is already up to date");
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        showDialog("YT-DLP has been updated");
+        return true;
     }
 
     public void downloadAllSongs() {
@@ -350,8 +384,19 @@ public class Controller {
                 sb.append(song.videoTitle());
                 sb.append(".%(ext)s\" --restrict-filenames");
 
+                System.out.println(sb.toString());
+
                 ProcessBuilder builder = new ProcessBuilder("cmd", "/c", sb.toString());
                 Process p = builder.start();
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line;
+
+                while (true) {
+                    line = r.readLine();
+                    if (line == null)
+                        break;
+                }
 
                 p.waitFor();
                 Platform.runLater(() -> {
